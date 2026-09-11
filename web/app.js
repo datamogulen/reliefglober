@@ -494,7 +494,7 @@ function byggModell(m) {
   modell = new THREE.Group();
   modell.add(inre);
   const rMax = m.info.rMax;
-  if (m.opt.dela) { modell.scale.setScalar(0.62 / (rMax + 2)); modell.position.y = -0.3; }
+  if (m.opt.dela) { modell.scale.setScalar(0.5 / (rMax + 2)); modell.position.y = -0.22; }
   else modell.scale.setScalar(1 / (m.opt.diameter / 2));
   modell.children[0].children.forEach(o => { o.frustumCulled = false; });
   scene.add(modell);
