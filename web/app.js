@@ -273,6 +273,11 @@ function storlek() {
   const ph = smal && !panel.classList.contains('dold') ? panel.offsetHeight : 0;
   camera.setViewOffset(w, h, pw / 2, ph / 2, w, h);
   camera.updateProjectionMatrix();
+  // Avstånd så att globen (radie ~1,06) ryms i ytan bredvid/ovanför panelen.
+  const t = Math.tan(camera.fov * Math.PI / 360) * Math.min((w - pw) / h, (h - ph) / h);
+  const avst = Math.max(3.2, 1.06 / (0.92 * t));
+  controls.maxDistance = Math.max(9, avst * 1.8);
+  camera.position.setLength(avst);
 }
 window.addEventListener('resize', storlek);
 $('panelknapp').addEventListener('click', () => {
