@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "reliefglober",
+      "runtimeExecutable": "/Users/bjornh/.pyenv/versions/3.11.9/bin/python",
+      "runtimeArgs": ["-m", "http.server", "8782", "--directory", "/Users/bjornh/Development/reliefglober/web"],
+      "port": 8782
+    }
+  ]
+}

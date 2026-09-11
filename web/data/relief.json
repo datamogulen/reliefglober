@@ -1,0 +1,23 @@
+{
+ "W": 1440,
+ "H": 720,
+ "upplosning": 0.25,
+ "format": "int16le, meter, rad 0 = söder, cellcentrerat",
+ "landandel": 0.3408,
+ "landandelYta": 0.2915,
+ "max": {
+  "m": 6164,
+  "latlon": [
+   35.375,
+   81.125
+  ]
+ },
+ "min": {
+  "m": -9677,
+  "latlon": [
+   -23.125,
+   -174.625
+  ]
+ },
+ "kalla": "NOAA NCEI ETOPO 2022 (60″, surface) doi:10.25921/fd45-gt74 + Natural Earth 10m land/ishyllor/sjöar"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "reliefglober",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test_stl.mjs"
+  }
+}

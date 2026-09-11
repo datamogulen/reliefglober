@@ -1,0 +1,7 @@
+# HTML/JS ska alltid revalideras (annars kör besökare gammal cachad kod);
+# höjddatat cache-bustas med ?v= i stället.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js|json)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
