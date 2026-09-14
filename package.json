@@ -1,6 +1,8 @@
 {
   "name": "reliefglober",
   "private": true,
+  "license": "MIT",
+  "author": "Björn Hedin",
   "type": "module",
   "scripts": {
     "test": "node test_stl.mjs"

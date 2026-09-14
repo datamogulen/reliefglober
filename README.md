@@ -34,6 +34,16 @@ flat ocean or flat land, adjust the exaggeration and export the globe for two-co
   trianguleras mot styrhålet och landets snittband som remsor. Södra halvklotet vänds
   så att båda ligger med snittytan nedåt.
 
+## Licens
+
+Koden är fri att använda, ändra och sprida under [MIT-licensen](LICENSE). Behåll
+upphovsrättsraden. Bygger du något på reliefgloberna blir jag glad för en länk till
+https://hedin.it/relief-globes/ eller hit.
+
+*Code released under the [MIT License](LICENSE) — keep the copyright notice. If you
+build on it, a link back to https://hedin.it/relief-globes/ or this repository is
+much appreciated.*
+
 ## Data
 
 - NOAA NCEI **ETOPO 2022** v1, 60″, *surface* (isytan på Antarktis och Grönland),
