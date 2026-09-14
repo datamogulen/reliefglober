@@ -4,6 +4,8 @@ Interaktiv jordglob där landet reser sig och havsbottnen sjunker ner. Du kan v�
 full relief, platt hav eller platt land, ändra överhöjningen och skriva ut globen i två
 färger som **två STL-filer: en för hav och en för land**.
 
+**Live:** https://hedin.it/relief-globes/
+
 *An interactive globe where the land rises and the seafloor sinks. Choose full relief,
 flat ocean or flat land, adjust the exaggeration and export the globe for two-colour
 3D printing as two STL files (ocean + land). UI in Swedish, English and Japanese.*

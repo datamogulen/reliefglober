@@ -31,11 +31,12 @@ const I18N = {
     uppsk: 'Filstorlek ≈', sek: 's',
     varnHal: 'Styrhålet går nästan ut i havsbottnen – minska djupet eller överhöjningen.',
     varnStor: 'Stora filer – 0,25° passar bäst för globar över ca 15 cm.',
-    nedlHav: '⬇ hav.stl', nedlLand: '⬇ land.stl',
+    nedlHav: '⬇ hav.stl', nedlLand: '⬇ land.stl', kallkod: 'Källkod på GitHub',
     omText: `<p><b>Data.</b> Höjder och havsdjup kommer från <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA ETOPO 2022</a> (1 bågminut, isytan på Antarktis och Grönland), medlade till 0,25° (≈ 28 km vid ekvatorn). Kustlinjen kommer från <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> 10 m, där Antarktis ishyllor räknas som land. Land som ligger under havsytan (t.ex. Kaspiska sänkan) visas i havsnivå, medan Kaspiska havet räknas som hav.</p>
 <p><b>Överhöjning.</b> I verklig skala (×1) är Mount Everest bara 0,14 % av jordradien. På en glob med 12 cm diameter blir berget 0,08 mm högt – tunnare än ett papper. Därför behövs överhöjning.</p>
 <p><b>Utskrift.</b> Filerna innehåller två kroppar som passar exakt i varandra: <i>hav</i> (globens kärna med havsbottnen) och <i>land</i> (ett skal ovanpå). Öppna båda samtidigt i Bambu Studio, PrusaSlicer eller OrcaSlicer och välj att ladda dem som <i>ett objekt med flera delar</i>. Ge sedan delarna varsin filamentfärg. Halvkloten ligger med snittytan nedåt och trycks utan stöd. Limma ihop dem med en tapp i styrhålet, till exempel en bit rundstav.</p>
-<p>0,5° räcker för globar på 8–15 cm. 0,25° ger finare detaljer men betydligt större filer.</p>`,
+<p>0,5° räcker för globar på 8–15 cm. 0,25° ger finare detaljer men betydligt större filer.</p>
+<p><b>Källkod.</b> All kod finns öppet på <a href="https://github.com/datamogulen/reliefglober" target="_blank" rel="noopener">GitHub</a>: webbsidan, STL-motorn, dataskriptet och testerna.</p>`,
   },
   en: {
     dokTitel: 'Relief globes — the Earth’s mountains and ocean depths in 3D',
@@ -59,11 +60,12 @@ const I18N = {
     uppsk: 'File size ≈', sek: 's',
     varnHal: 'The alignment hole almost reaches the seafloor – reduce its depth or the exaggeration.',
     varnStor: 'Large files – 0.25° suits globes larger than about 15 cm.',
-    nedlHav: '⬇ ocean.stl', nedlLand: '⬇ land.stl',
+    nedlHav: '⬇ ocean.stl', nedlLand: '⬇ land.stl', kallkod: 'Source code on GitHub',
     omText: `<p><b>Data.</b> Elevations and ocean depths come from <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA ETOPO 2022</a> (1 arc-minute, ice surface on Antarctica and Greenland), averaged to 0.25° (≈ 28 km at the equator). The coastline comes from <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> 10 m, with Antarctic ice shelves counted as land. Land below sea level (e.g. the Caspian Depression) is shown at sea level, while the Caspian Sea counts as ocean.</p>
 <p><b>Exaggeration.</b> At true scale (×1), Mount Everest is only 0.14% of the Earth’s radius. On a 12 cm globe it would be 0.08 mm tall – thinner than a sheet of paper. That is why exaggeration is needed.</p>
 <p><b>Printing.</b> The files hold two bodies that fit exactly together: <i>ocean</i> (the core of the globe with the seafloor) and <i>land</i> (a shell on top). Open both at once in Bambu Studio, PrusaSlicer or OrcaSlicer and load them as <i>one object with multiple parts</i>. Then give each part its own filament colour. The hemispheres lie cut face down and print without supports. Glue them together with a pin in the alignment hole, for example a piece of dowel.</p>
-<p>0.5° is enough for globes of 8–15 cm. 0.25° gives finer detail but much larger files.</p>`,
+<p>0.5° is enough for globes of 8–15 cm. 0.25° gives finer detail but much larger files.</p>
+<p><b>Source code.</b> All the code is openly available on <a href="https://github.com/datamogulen/reliefglober" target="_blank" rel="noopener">GitHub</a>: the web page, the STL engine, the data script and the tests.</p>`,
   },
   ja: {
     dokTitel: 'レリーフ地球儀 — 山と海の深さを3Dで',
@@ -87,11 +89,12 @@ const I18N = {
     uppsk: 'ファイルサイズ ≈', sek: '秒',
     varnHal: 'ガイド穴が海底に近すぎます。深さか強調倍率を下げてください。',
     varnStor: 'ファイルが大きくなります。0.25°は直径約15 cm以上の地球儀向けです。',
-    nedlHav: '⬇ 海.stl', nedlLand: '⬇ 陸.stl',
+    nedlHav: '⬇ 海.stl', nedlLand: '⬇ 陸.stl', kallkod: 'GitHubのソースコード',
     omText: `<p><b>データ</b>　標高と水深は <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA ETOPO 2022</a>（1分角、南極とグリーンランドは氷床の表面）を0.25°（赤道で約28 km）に平均したものです。海岸線は <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> 10 m を使い、南極の棚氷は陸として扱っています。海面より低い陸地（カスピ海沿岸低地など）は海面の高さで表示し、カスピ海は海として扱います。</p>
 <p><b>強調倍率</b>　実際の縮尺（×1）では、エベレストの高さは地球の半径の0.14%にすぎません。直径12 cmの地球儀なら0.08 mmで、紙より薄くなります。そのため高さを強調しています。</p>
 <p><b>印刷</b>　ファイルはぴったり組み合わさる2つの部品です。<i>海</i>（海底を含む地球儀の芯）と<i>陸</i>（その上の殻）です。Bambu Studio、PrusaSlicer、OrcaSlicer で両方を同時に開き、<i>複数パーツからなる1つのオブジェクト</i>として読み込んでください。それぞれに別のフィラメント色を割り当てます。半球は切断面を下にして置かれ、サポートなしで印刷できます。ガイド穴にダボなどのピンを入れて接着してください。</p>
-<p>直径8〜15 cmなら0.5°で十分です。0.25°はより精細ですが、ファイルがかなり大きくなります。</p>`,
+<p>直径8〜15 cmなら0.5°で十分です。0.25°はより精細ですが、ファイルがかなり大きくなります。</p>
+<p><b>ソースコード</b>　ウェブページ、STL生成エンジン、データ処理スクリプト、テストを含むすべてのコードを <a href="https://github.com/datamogulen/reliefglober" target="_blank" rel="noopener">GitHub</a> で公開しています。</p>`,
   },
 };
 const SPRAKNYCKEL = 'relief_sprak';
@@ -151,6 +154,7 @@ camera.position.set(0.9, 1.4, 3.3);
 scene.add(camera);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true; controls.enablePan = false;
+controls.zoomSpeed = 4;
 controls.minDistance = 1.35; controls.maxDistance = 9;
 controls.autoRotate = true; controls.autoRotateSpeed = 0.6;
 controls.addEventListener('start', () => { controls.autoRotate = false; });
