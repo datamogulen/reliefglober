@@ -2,7 +2,8 @@
 
 Interaktiv jordglob där landet reser sig och havsbottnen sjunker ner. Du kan välja
 full relief, platt hav eller platt land, ändra överhöjningen och skriva ut globen i två
-färger som **två STL-filer: en för hav och en för land**.
+färger som **två STL-filer: en för hav och en för land**. Landsgränser kan visas på
+globen och skrivas ut som en tunn remsa i en tredje STL-fil.
 
 **Live:** https://hedin.it/relief-globes/
 
@@ -30,6 +31,10 @@ flat ocean or flat land, adjust the exaggeration and export the globe for two-co
   med motsatt orientering, så att delarna passar kant i kant i slicern.
 - Nätet består av ringar med jämna breddgradssteg och `∝ cos(lat)` punkter per ring,
   hopsydda med blixtlåstriangulering. Det ger inga T-korsningar och inga polsplitter.
+- **Landsgränser** (valfritt): Natural Earth 1:50M landgränser blir en sluten remsa per
+  sammanhängande linjebit över land. Toppen ligger en vald höjd över högsta ytpunkten
+  tvärs remsan, och botten sänks 0,3 mm ner i landet så att remsan fäster. Vid ekvatorn
+  delas remsorna med plan ändyta.
 - **Halvklot:** ekvatorn är en ring, så snittet blir exakt plant. Havets snittyta
   trianguleras mot styrhålet och landets snittband som remsor. Södra halvklotet vänds
   så att båda ligger med snittytan nedåt.
@@ -48,7 +53,8 @@ much appreciated.*
 
 - NOAA NCEI **ETOPO 2022** v1, 60″, *surface* (isytan på Antarktis och Grönland),
   doi:[10.25921/fd45-gt74](https://doi.org/10.25921/fd45-gt74). Public domain.
-- **Natural Earth** 10m land, antarktiska ishyllor och sjöar. Public domain.
+- **Natural Earth** 10m land, antarktiska ishyllor och sjöar samt 50m landgränser
+  (`web/data/granser.json`, byggs med `python bygg_data.py --granser`). Public domain.
 
 Varje 0,25°-cell räknas som land om minst hälften är land. Landceller får medelhöjden
 över sina landpixlar, där sjöpixlar undantas eftersom ETOPO har sjöbottnar. Havsceller

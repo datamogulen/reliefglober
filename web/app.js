@@ -6,6 +6,7 @@ import { uppskatta } from './stl.js';
 
 const DATAV = 1;
 const $ = id => document.getElementById(id);
+const D2R = Math.PI / 180;
 
 // ---------------------------------------------------------------- språk
 const I18N = {
@@ -32,10 +33,14 @@ const I18N = {
     varnHal: 'Styrhålet går nästan ut i havsbottnen – minska djupet eller överhöjningen.',
     varnStor: 'Stora filer – 0,25° passar bäst för globar över ca 15 cm.',
     nedlHav: '⬇ hav.stl', nedlLand: '⬇ land.stl', kallkod: 'Källkod på GitHub',
+    granser: 'Landsgränser', gransStl: 'Landsgränser som tredje STL-fil', gransBredd: 'Gränsernas bredd (mm)',
+    gransHojd: 'Gränsernas höjd över land (mm)', nedlGranser: '⬇ gränser.stl', granserNamn: 'gränser',
+    varnGrans: 'Gränser smalare än 0,4 mm blir svåra att skriva ut med ett 0,4 mm-munstycke.',
     omText: `<p><b>Data.</b> Höjder och havsdjup kommer från <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA ETOPO 2022</a> (1 bågminut, isytan på Antarktis och Grönland), medlade till 0,25° (≈ 28 km vid ekvatorn). Kustlinjen kommer från <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> 10 m, där Antarktis ishyllor räknas som land. Land som ligger under havsytan (t.ex. Kaspiska sänkan) visas i havsnivå, medan Kaspiska havet räknas som hav.</p>
 <p><b>Överhöjning.</b> I verklig skala (×1) är Mount Everest bara 0,14 % av jordradien. På en glob med 12 cm diameter blir berget 0,08 mm högt – tunnare än ett papper. Därför behövs överhöjning.</p>
 <p><b>Utskrift.</b> Filerna innehåller två kroppar som passar exakt i varandra: <i>hav</i> (globens kärna med havsbottnen) och <i>land</i> (ett skal ovanpå). Öppna båda samtidigt i Bambu Studio, PrusaSlicer eller OrcaSlicer och välj att ladda dem som <i>ett objekt med flera delar</i>. Ge sedan delarna varsin filamentfärg. Halvkloten ligger med snittytan nedåt och trycks utan stöd. Limma ihop dem med en tapp i styrhålet, till exempel en bit rundstav.</p>
 <p>0,5° räcker för globar på 8–15 cm. 0,25° ger finare detaljer men betydligt större filer.</p>
+<p><b>Landsgränser.</b> Gränserna kommer från Natural Earth i skala 1:50 miljoner (landgränser så som de gäller i praktiken, även omstridda linjer). I utskriften blir de en tunn remsa som ligger ovanpå landytan och går 0,3 mm ner i den för att fästa. Importera gränser.stl som en tredje del och ge den en egen färg. Slicern hanterar överlappet mellan delarna.</p>
 <p><b>Källkod.</b> All kod finns öppet på <a href="https://github.com/datamogulen/reliefglober" target="_blank" rel="noopener">GitHub</a>: webbsidan, STL-motorn, dataskriptet och testerna.</p>`,
   },
   en: {
@@ -61,10 +66,14 @@ const I18N = {
     varnHal: 'The alignment hole almost reaches the seafloor – reduce its depth or the exaggeration.',
     varnStor: 'Large files – 0.25° suits globes larger than about 15 cm.',
     nedlHav: '⬇ ocean.stl', nedlLand: '⬇ land.stl', kallkod: 'Source code on GitHub',
+    granser: 'Country borders', gransStl: 'Country borders as a third STL file', gransBredd: 'Border width (mm)',
+    gransHojd: 'Border height above land (mm)', nedlGranser: '⬇ borders.stl', granserNamn: 'borders',
+    varnGrans: 'Borders narrower than 0.4 mm are hard to print with a 0.4 mm nozzle.',
     omText: `<p><b>Data.</b> Elevations and ocean depths come from <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA ETOPO 2022</a> (1 arc-minute, ice surface on Antarctica and Greenland), averaged to 0.25° (≈ 28 km at the equator). The coastline comes from <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> 10 m, with Antarctic ice shelves counted as land. Land below sea level (e.g. the Caspian Depression) is shown at sea level, while the Caspian Sea counts as ocean.</p>
 <p><b>Exaggeration.</b> At true scale (×1), Mount Everest is only 0.14% of the Earth’s radius. On a 12 cm globe it would be 0.08 mm tall – thinner than a sheet of paper. That is why exaggeration is needed.</p>
 <p><b>Printing.</b> The files hold two bodies that fit exactly together: <i>ocean</i> (the core of the globe with the seafloor) and <i>land</i> (a shell on top). Open both at once in Bambu Studio, PrusaSlicer or OrcaSlicer and load them as <i>one object with multiple parts</i>. Then give each part its own filament colour. The hemispheres lie cut face down and print without supports. Glue them together with a pin in the alignment hole, for example a piece of dowel.</p>
 <p>0.5° is enough for globes of 8–15 cm. 0.25° gives finer detail but much larger files.</p>
+<p><b>Country borders.</b> The borders come from Natural Earth at 1:50 million (land boundaries as they apply in practice, including disputed lines). In the print they become a thin strip on top of the land surface that reaches 0.3 mm into it to hold. Import borders.stl as a third part and give it its own colour. The slicer handles the overlap between the parts.</p>
 <p><b>Source code.</b> All the code is openly available on <a href="https://github.com/datamogulen/reliefglober" target="_blank" rel="noopener">GitHub</a>: the web page, the STL engine, the data script and the tests.</p>`,
   },
   ja: {
@@ -90,10 +99,14 @@ const I18N = {
     varnHal: 'ガイド穴が海底に近すぎます。深さか強調倍率を下げてください。',
     varnStor: 'ファイルが大きくなります。0.25°は直径約15 cm以上の地球儀向けです。',
     nedlHav: '⬇ 海.stl', nedlLand: '⬇ 陸.stl', kallkod: 'GitHubのソースコード',
+    granser: '国境線', gransStl: '国境線を3つ目のSTLファイルにする', gransBredd: '国境線の幅 (mm)',
+    gransHojd: '陸面からの国境線の高さ (mm)', nedlGranser: '⬇ 国境.stl', granserNamn: '国境線',
+    varnGrans: '幅0.4 mm未満の国境線は、0.4 mmノズルでは印刷が難しくなります。',
     omText: `<p><b>データ</b>　標高と水深は <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model" target="_blank" rel="noopener">NOAA ETOPO 2022</a>（1分角、南極とグリーンランドは氷床の表面）を0.25°（赤道で約28 km）に平均したものです。海岸線は <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> 10 m を使い、南極の棚氷は陸として扱っています。海面より低い陸地（カスピ海沿岸低地など）は海面の高さで表示し、カスピ海は海として扱います。</p>
 <p><b>強調倍率</b>　実際の縮尺（×1）では、エベレストの高さは地球の半径の0.14%にすぎません。直径12 cmの地球儀なら0.08 mmで、紙より薄くなります。そのため高さを強調しています。</p>
 <p><b>印刷</b>　ファイルはぴったり組み合わさる2つの部品です。<i>海</i>（海底を含む地球儀の芯）と<i>陸</i>（その上の殻）です。Bambu Studio、PrusaSlicer、OrcaSlicer で両方を同時に開き、<i>複数パーツからなる1つのオブジェクト</i>として読み込んでください。それぞれに別のフィラメント色を割り当てます。半球は切断面を下にして置かれ、サポートなしで印刷できます。ガイド穴にダボなどのピンを入れて接着してください。</p>
 <p>直径8〜15 cmなら0.5°で十分です。0.25°はより精細ですが、ファイルがかなり大きくなります。</p>
+<p><b>国境線</b>　国境線は Natural Earth の5000万分の1データ（実際の運用に基づく陸上の境界線。係争中の境界線も含む）です。印刷では陸面の上に載る細い帯になり、固定のため陸面に0.3 mm食い込みます。国境.stl を3つ目のパーツとして読み込み、別の色を割り当ててください。パーツ同士の重なりはスライサーが処理します。</p>
 <p><b>ソースコード</b>　ウェブページ、STL生成エンジン、データ処理スクリプト、テストを含むすべてのコードを <a href="https://github.com/datamogulen/reliefglober" target="_blank" rel="noopener">GitHub</a> で公開しています。</p>`,
   },
 };
@@ -129,6 +142,7 @@ const STD = {
   lage: 'full', kLand: 40, kHav: 40, lank: true, gamma: 1, jamn: 0,
   fLand: '#c9b27a', fHav: '#2f6bb3', hojdfarg: false, kust: true,
   diameter: 120, upp: 0.5, landDjup: 2, dela: true, halD: 5, halDjup: 8,
+  granser: false, fGrans: '#262626', gransStl: false, gransBredd: 0.8, gransHojd: 0.5,
 };
 const S = { ...STD };
 try { Object.assign(S, JSON.parse(localStorage.getItem(INSTNYCKEL) || '{}')); } catch {}
@@ -308,13 +322,17 @@ function visaVarden() {
   $('diameter').value = S.diameter; $('upp').value = String(S.upp); $('landDjup').value = S.landDjup;
   $('halD').value = S.halD; $('halDjup').value = S.halDjup; $('dela').checked = S.dela;
   $('halD').disabled = $('halDjup').disabled = !S.dela;
+  $('granser').checked = S.granser; $('fGrans').value = S.fGrans;
+  $('gransStl').checked = S.gransStl; $('gransBredd').value = S.gransBredd; $('gransHojd').value = S.gransHojd;
+  $('gransFalt').hidden = !S.gransStl;
 }
 
 function tillUniforms() {
   uniforms.kL.value = kL(); uniforms.kH.value = kH(); uniforms.gam.value = S.gamma;
   uniforms.fLand.value.set(S.fLand); uniforms.fHav.value.set(S.fHav);
   uniforms.hojdfarg.value = S.hojdfarg ? 1 : 0; uniforms.kust.value = S.kust ? 1 : 0;
-  if (modell) modell.children[0].children.forEach((m, i) => m.material.color.set(i ? S.fLand : S.fHav));
+  const F = [S.fHav, S.fLand, S.fGrans];
+  if (modell) modell.children[0].children.forEach((m, i) => m.material.color.set(F[i]));
 }
 
 let faltMax = 0, faltMin = 0;
@@ -340,12 +358,13 @@ function uppdateraMatt() {
   const varn = [];
   if (S.dela && S.halD > 0 && R - ned - S.halDjup < 3) varn.push(T('varnHal'));
   if (S.upp === 0.25 && S.diameter < 150) varn.push(T('varnStor'));
+  if (S.gransStl && S.gransBredd < 0.4) varn.push(T('varnGrans'));
   $('varning').hidden = !varn.length;
   $('varning').textContent = varn.join(' ');
 }
 
 function andrat({ geometri = true } = {}) {
-  tillUniforms(); visaVarden(); uppdateraMatt(); spara();
+  tillUniforms(); visaVarden(); uppdateraMatt(); uppdateraGranser(); spara();
   if (geometri && senaste && !senaste.inaktuell) { senaste.inaktuell = true; visaStatus(); }
 }
 
@@ -369,6 +388,14 @@ const talFalt = (id, min, max) => $(id).addEventListener('change', e => {
   andrat();
 });
 talFalt('diameter', 30, 400); talFalt('landDjup', 0.6, 20); talFalt('halD', 0, 30); talFalt('halDjup', 1, 40);
+talFalt('gransBredd', 0.3, 5); talFalt('gransHojd', 0.2, 5);
+$('granser').addEventListener('change', e => { S.granser = e.target.checked; andrat({ geometri: false }); visaGranser(); });
+$('fGrans').addEventListener('input', e => { S.fGrans = e.target.value; andrat({ geometri: false }); });
+$('gransStl').addEventListener('change', e => {
+  S.gransStl = e.target.checked;
+  if (S.gransStl && !S.granser) { S.granser = true; visaGranser(); }
+  andrat();
+});
 $('upp').addEventListener('change', e => { S.upp = +e.target.value; andrat(); });
 $('dela').addEventListener('change', e => { S.dela = e.target.checked; andrat(); });
 
@@ -379,7 +406,59 @@ function tillampaJamning() {
   uniforms.hojd.value.image.data = falt.data;
   uniforms.hojd.value.needsUpdate = true;
   uniforms.polS.value = falt.polS; uniforms.polN.value = falt.polN;
+  uppdateraGranser();
   uppdateraMatt();
+}
+
+// ---------------------------------------------------------------- landsgränser (vy)
+let GRANSER = null, gransLinjer = null, gransLL = null;
+function hamtaGranser() {
+  if (!GRANSER) GRANSER = fetch(`data/granser.json?v=${DATAV}`).then(r => r.json()).then(j => j.linjer);
+  return GRANSER;
+}
+async function visaGranser() {
+  if (S.granser && !gransLinjer) {
+    const linjer = await hamtaGranser();
+    if (gransLinjer) return uppdateraGranser();
+    const ll = [], seg = [];
+    for (const L of linjer) {
+      ll.push(L[0], L[1]);
+      for (let i = 2; i < L.length; i += 2) {
+        const lo0 = L[i - 2], la0 = L[i - 1], dlo = L[i] - lo0, dla = L[i + 1] - la0;
+        const n = Math.max(1, Math.ceil(Math.hypot(dlo * Math.cos(la0 * D2R), dla) / 0.2));
+        for (let k = 1; k <= n; k++) {
+          ll.push(lo0 + dlo * k / n, la0 + dla * k / n);
+          const j = ll.length / 2 - 1;
+          seg.push(j - 1, j);
+        }
+      }
+    }
+    gransLL = Float32Array.from(ll);
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(gransLL.length / 2 * 3), 3));
+    g.setIndex(seg);
+    gransLinjer = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: S.fGrans }));
+    gransLinjer.frustumCulled = false;
+    scene.add(gransLinjer);
+  }
+  uppdateraGranser();
+}
+// Draperar linjerna på den aktuella reliefen (samma sampling och radie som shadern).
+function uppdateraGranser() {
+  if (!gransLinjer || !falt) return;
+  gransLinjer.visible = S.granser && !(modell && modell.visible);
+  gransLinjer.material.color.set(S.fGrans);
+  if (!S.granser) return;
+  const rad = radieFunktion({ R: 1, kLand: kL(), kHav: kH(), gamma: S.gamma });
+  const p = gransLinjer.geometry.attributes.position.array;
+  for (let i = 0, n = gransLL.length / 2; i < n; i++) {
+    const lon = gransLL[2 * i], lat = gransLL[2 * i + 1];
+    const s = sampla(falt, lat, lon);
+    const r = s > 0 ? rad(s) + 0.003 : 0;               // över hav: göms i globens mitt
+    const cl = Math.cos(lat * D2R);
+    p[3 * i] = r * cl * Math.sin(lon * D2R); p[3 * i + 1] = r * Math.sin(lat * D2R); p[3 * i + 2] = r * cl * Math.cos(lon * D2R);
+  }
+  gransLinjer.geometry.attributes.position.needsUpdate = true;
 }
 
 // ---------------------------------------------------------------- tooltip
@@ -427,15 +506,17 @@ function filnamn(del) {
   return `reliefglob_${S.diameter}mm_${k}${S.gamma !== 1 ? '_g' + S.gamma : ''}${S.jamn ? '_j' + S.jamn : ''}_${del}.stl`;
 }
 
-$('bygg').addEventListener('click', () => {
+$('bygg').addEventListener('click', async () => {
   if (bygger || !redo) return;
   bygger = true; $('bygg').disabled = true; t0 = performance.now();
   senaste = { status: 'bygger' }; visaStatus();
   const opt = {
     upplosning: S.upp, diameter: S.diameter, kLand: kL(), kHav: kH(), gamma: S.gamma,
     landDjup: S.landDjup, dela: S.dela, halD: S.dela ? S.halD : 0, halDjup: S.halDjup,
+    granser: S.gransStl, gransBredd: S.gransBredd, gransHojd: S.gransHojd,
   };
-  worker.postMessage({ id: ++jobb, opt, falt: { W: falt.W, H: falt.H, polS: falt.polS, polN: falt.polN, data: falt.data } });
+  const linjer = S.gransStl ? await hamtaGranser() : null;
+  worker.postMessage({ id: ++jobb, opt, linjer, falt: { W: falt.W, H: falt.H, polS: falt.polS, polN: falt.polN, data: falt.data } });
 });
 
 worker.onmessage = e => {
@@ -445,13 +526,14 @@ worker.onmessage = e => {
   bygger = false; $('bygg').disabled = false;
   if (m.typ === 'fel') { senaste = { status: 'fel', text: m.text }; visaStatus(); console.error(m.text); return; }
   urlar.forEach(u => URL.revokeObjectURL(u));
-  const hav = URL.createObjectURL(new Blob([m.stlHav], { type: 'model/stl' }));
-  const land = URL.createObjectURL(new Blob([m.stlLand], { type: 'model/stl' }));
-  urlar = [hav, land];
+  const blob = b => URL.createObjectURL(new Blob([b], { type: 'model/stl' }));
+  const hav = blob(m.stlHav), land = blob(m.stlLand), granser = m.stlGranser ? blob(m.stlGranser) : null;
+  urlar = [hav, land, granser].filter(Boolean);
   senaste = {
-    status: 'klar', sek: (performance.now() - t0) / 1000, kh: m.kh, kl: m.kl,
+    status: 'klar', sek: (performance.now() - t0) / 1000, kh: m.kh, kl: m.kl, kg: m.kg,
     mbHav: m.stlHav.byteLength / 1e6, mbLand: m.stlLand.byteLength / 1e6,
-    hav, land, namnHav: filnamn('hav'), namnLand: filnamn('land'),
+    mbGranser: m.stlGranser ? m.stlGranser.byteLength / 1e6 : 0,
+    hav, land, granser, namnHav: filnamn('hav'), namnLand: filnamn('land'), namnGranser: filnamn('granser'),
   };
   visaStatus();
   byggModell(m);
@@ -459,6 +541,7 @@ worker.onmessage = e => {
   else {
     ladda(hav, senaste.namnHav);
     setTimeout(() => ladda(land, senaste.namnLand), 400);
+    if (granser) setTimeout(() => ladda(granser, senaste.namnGranser), 800);
   }
 };
 
@@ -478,8 +561,11 @@ function visaStatus() {
   const k = (kk, mb) => `${tal(kk.trianglar)} ${T('tri')}, ${tal(mb, 1)} MB, ${tal(kk.volymMm3 / 1000, 1)} cm³ – ` +
     (kk.oparade === 0 ? `<span class="ok">${T('vattentat')} ✓</span>` : `<span class="fel">${T('ejVattentat')} (${kk.oparade})</span>`);
   st.innerHTML = `${T('klar')} (${tal(senaste.sek, 1)} ${T('sek')})<br><b>${T('hav')}</b>: ${k(senaste.kh, senaste.mbHav)}<br><b>${T('land')}</b>: ${k(senaste.kl, senaste.mbLand)}` +
+    (senaste.kg ? `<br><b>${T('granserNamn')}</b>: ${k(senaste.kg, senaste.mbGranser)}` : '') +
     (senaste.inaktuell ? `<br><span class="fel">${T('inaktuell')}</span>` : '');
-  for (const [url, namn, txt] of [[senaste.hav, senaste.namnHav, 'nedlHav'], [senaste.land, senaste.namnLand, 'nedlLand']]) {
+  const filer = [[senaste.hav, senaste.namnHav, 'nedlHav'], [senaste.land, senaste.namnLand, 'nedlLand']];
+  if (senaste.granser) filer.push([senaste.granser, senaste.namnGranser, 'nedlGranser']);
+  for (const [url, namn, txt] of filer) {
     const a = document.createElement('a');
     a.href = url; a.download = namn; a.textContent = T(txt); a.title = namn;
     nl.appendChild(a);
@@ -499,6 +585,7 @@ function byggModell(m) {
   };
   const inre = new THREE.Group();
   inre.add(mesh(m.hav, S.fHav), mesh(m.land, S.fLand));
+  if (m.granser) inre.add(mesh(m.granser, S.fGrans));
   inre.rotation.x = -Math.PI / 2;                  // STL: z upp → three: y upp
   modell = new THREE.Group();
   modell.add(inre);
@@ -514,6 +601,7 @@ function byggModell(m) {
 function visaUtskrift(pa) {
   if (!modell) return;
   modell.visible = pa; glob.visible = !pa;
+  if (gransLinjer) gransLinjer.visible = S.granser && !pa;
   if (pa) tips.style.display = 'none';
 }
 $('visaUtskrift').addEventListener('change', e => visaUtskrift(e.target.checked));
@@ -544,6 +632,7 @@ async function start() {
   tillampaJamning();
   redo = true;
   tillUniforms(); uppdateraMatt();
+  if (S.granser) visaGranser();
   $('laddar').remove();
   window._relief = { S, andrat, visaUtskrift, camera, controls };
 }

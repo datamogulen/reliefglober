@@ -4,10 +4,11 @@
 //   node test_stl.mjs --data     → riktiga web/data/relief.bin
 //   node test_stl.mjs --data --skriv 0.5   → skriver även STL-filer till utskrift/
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { byggGlob, kontroll, tillStl, ringar } from './web/stl.js';
+import { byggGlob, byggGranser, kontroll, tillStl, ringar } from './web/stl.js';
 import { polMedel, jamna, sampla, radieFunktion } from './web/falt.js';
 
 const args = process.argv.slice(2);
+const GRANS = JSON.parse(readFileSync('web/data/granser.json', 'utf8')).linjer;
 let f;
 if (args.includes('--data')) {
   const meta = JSON.parse(readFileSync('web/data/relief.json', 'utf8'));
@@ -56,6 +57,8 @@ for (const c of fall) {
     return { fel, area };
   };
   const sh = vandaSnitt(g.hav), sl = vandaSnitt(g.land);
+  const gr = byggGranser(f, { ...opt, gransBredd: 0.8, gransHojd: 0.5 }, GRANS, g.info.rMax);
+  const kg = kontroll(gr), sg = vandaSnitt(gr);
   // Väntad snittarea: stjärnpolygonen genom ekvatorns ytradier (×2 halvklot) minus hålen.
   let vantad = 0;
   if (c.dela) {
@@ -67,14 +70,17 @@ for (const c of fall) {
   }
   const areaOk = !c.dela || Math.abs(sh.area + sl.area - vantad) / vantad < 0.01;
   const ok = kh.oparade === 0 && kl.oparade === 0 && kh.volymMm3 > 0 && kl.volymMm3 > 0 && !kh.degenererade && !kl.degenererade
-    && sh.fel === 0 && sl.fel === 0 && areaOk;
+    && sh.fel === 0 && sl.fel === 0 && areaOk
+    && kg.oparade === 0 && kg.volymMm3 > 0 && !kg.degenererade && sg.fel === 0;
   if (!ok) fel++;
   console.log(`${ok ? 'OK ' : 'FEL'} ${c.namn.padEnd(16)} ${ms} ms  hav ${kh.trianglar} tri, ${kh.oparade} opar, ${(kh.volymMm3 / 1000).toFixed(1)} cm³ | land ${kl.trianglar} tri, ${kl.oparade} opar, ${(kl.volymMm3 / 1000).toFixed(1)} cm³ | kust ${g.info.kustpunkter}`);
   if (c.dela) console.log(`    snitt: ${sh.fel + sl.fel} vända trianglar, area ${((sh.area + sl.area) / 100).toFixed(2)} cm² (väntat ${(vantad / 100).toFixed(2)})`);
+  console.log(`    gränser: ${gr.info.remsor} remsor, ${kg.trianglar} tri, ${kg.oparade} opar, ${(kg.volymMm3 / 1000).toFixed(2)} cm³, ${sg.fel} vända snitt`);
   if (skriv >= 0) {
     mkdirSync('utskrift', { recursive: true });
     writeFileSync(`utskrift/${c.namn}_hav.stl`, Buffer.from(tillStl(g.hav)));
     writeFileSync(`utskrift/${c.namn}_land.stl`, Buffer.from(tillStl(g.land)));
+    writeFileSync(`utskrift/${c.namn}_granser.stl`, Buffer.from(tillStl(gr)));
   }
 }
 // Utjämningen får inte flytta kusten.

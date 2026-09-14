@@ -142,5 +142,30 @@ def main():
     print(json.dumps(meta, ensure_ascii=False, indent=1))
 
 
+def bygg_granser():
+    """Natural Earth 1:50M landgränser → web/data/granser.json (lon,lat-följder, 3 decimaler)."""
+    namn = "ne_50m_admin_0_boundary_lines_land"
+    if not (NE / f"{namn}.shp").exists():
+        NE.mkdir(parents=True, exist_ok=True)
+        z = NE / f"{namn}.zip"
+        subprocess.run(["curl", "-sSL", "-o", str(z),
+                        f"https://naciscdn.org/naturalearth/50m/cultural/{namn}.zip"], check=True)
+        subprocess.run(["unzip", "-oq", str(z), "-d", str(NE)], check=True)
+    linjer = []
+    for form in shapefile.Reader(str(NE / namn)).shapes():
+        delar = list(form.parts) + [len(form.points)]
+        for a, b in zip(delar[:-1], delar[1:]):
+            if b - a >= 2:
+                linjer.append([round(v, 3) for p in form.points[a:b] for v in p])
+    UT.mkdir(parents=True, exist_ok=True)
+    (UT / "granser.json").write_text(json.dumps(
+        {"kalla": "Natural Earth 1:50M admin-0 boundary lines (land), public domain", "linjer": linjer},
+        separators=(",", ":")))
+    print(f"granser.json: {len(linjer)} linjer, {sum(len(l) for l in linjer) // 2} punkter")
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--granser" not in sys.argv:
+        main()
+    bygg_granser()

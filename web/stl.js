@@ -282,6 +282,125 @@ export function byggGlob(f, opt) {
   };
 }
 
+// Landsgränser som tunn remsa ovanpå landytan: en sluten kropp per sammanhängande
+// linjebit över land. När globen delas får remsorna ett smalt uppehåll (1,5 halva
+// bredder) på var sida om ekvatorn, så att ingen remsa sticker ut under snittytan.
+// Toppen ligger gransHojd över högsta ytpunkten tvärs remsan; botten gransSank under
+// lägsta punkten i närheten, så remsan fäster i landet (slicern klipper överlappet).
+export function byggGranser(f, opt, linjer, rMax) {
+  const R = opt.diameter / 2;
+  const rad = radieFunktion({ R, kLand: opt.kLand, kHav: opt.kHav, gamma: opt.gamma });
+  const rIn = R - opt.landDjup;
+  const vinkB = opt.gransBredd / 2 / R, hojd = opt.gransHojd, sank = opt.gransSank ?? 0.3;
+  const zBand = Math.sin(1.5 * vinkB);
+  const steg = Math.min(opt.upplosning / 2, 0.4 / R / D2R) * D2R;      // punktavstånd längs linjen
+  const grann = opt.upplosning / 2 * D2R;
+  const dx = rMax + 4;
+  const pos = new Buf(Float64Array), tri = new Buf(Uint32Array);
+  let nv = 0, nRemsor = 0;
+  const norm = v => { const l = Math.hypot(v[0], v[1], v[2]); return [v[0] / l, v[1] / l, v[2] / l]; };
+  const vinkel = (a, b) => Math.acos(Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]));
+  const flytta = (d, v, k) => norm([d[0] + v[0] * k, d[1] + v[1] * k, d[2] + v[2] * k]);
+  const hojdVid = d => sampla(f, Math.asin(Math.max(-1, Math.min(1, d[2]))) / D2R, Math.atan2(d[1], d[0]) / D2R);
+  const ny = (d, r, h) => {
+    let x = d[0] * r, y = d[1] * r, z = d[2] * r;
+    if (opt.dela) { if (h === 1) { y = -y; z = -z; x += dx; } else x -= dx; }
+    pos.push3(x, y, z); return nv++;
+  };
+  const q = (a, b, c, d) => { tri.push3(a, b, c); tri.push3(a, c, d); };
+
+  const remsa = (P, h, sluten) => {
+    const n = P.length, V = [];
+    for (let k = 0; k < n; k++) {
+      const d = P[k];
+      const fore = k > 0 ? P[k - 1] : sluten ? P[n - 1] : d;
+      const efter = k < n - 1 ? P[k + 1] : sluten ? P[0] : d;
+      let T = [efter[0] - fore[0], efter[1] - fore[1], efter[2] - fore[2]];
+      const dt = T[0] * d[0] + T[1] * d[1] + T[2] * d[2];
+      T = norm([T[0] - dt * d[0], T[1] - dt * d[1], T[2] - dt * d[2]]);
+      const S = norm([d[1] * T[2] - d[2] * T[1], d[2] * T[0] - d[0] * T[2], d[0] * T[1] - d[1] * T[0]]);
+      const Ld = flytta(d, S, vinkB), Rd = flytta(d, S, -vinkB);
+      const rC = rad(hojdVid(d)), rL = rad(hojdVid(Ld)), rR = rad(hojdVid(Rd));
+      const top = Math.max(rC, rL, rR) + hojd;
+      const bot = Math.max(rIn + 0.2, Math.min(rC, rL, rR,
+        rad(hojdVid(flytta(d, T, grann))), rad(hojdVid(flytta(d, T, -grann)))) - sank);
+      V.push([ny(Ld, bot, h), ny(Rd, bot, h), ny(Rd, top, h), ny(Ld, top, h)]);   // Lb Rb Rt Lt
+    }
+    const m = sluten ? n : n - 1;
+    for (let k = 0; k < m; k++) {
+      const [Lb, Rb, Rt, Lt] = V[k], [Lb2, Rb2, Rt2, Lt2] = V[(k + 1) % n];
+      q(Lt, Rt, Rt2, Lt2); q(Rt, Rb, Rb2, Rt2); q(Rb, Lb, Lb2, Rb2); q(Lb, Lt, Lt2, Lb2);
+    }
+    if (!sluten) {
+      const [Lb, Rb, Rt, Lt] = V[0]; q(Lt, Lb, Rb, Rt);
+      const [Lb2, Rb2, Rt2, Lt2] = V[n - 1]; q(Rt2, Rb2, Lb2, Lt2);
+    }
+    nRemsor++;
+  };
+
+  for (const L of linjer) {
+    // punkter närmare än halva bredden gallras (annars korsar remsan sig själv i sicksack)
+    const pts = [];
+    for (let i = 0; i < L.length; i += 2) {
+      const la = L[i + 1] * D2R, lo = L[i] * D2R, cl = Math.cos(la);
+      const v = [cl * Math.cos(lo), cl * Math.sin(lo), Math.sin(la)];
+      if (pts.length && vinkel(pts[pts.length - 1], v) < vinkB) {
+        if (i + 2 >= L.length && pts.length > 1) pts[pts.length - 1] = v;
+        continue;
+      }
+      pts.push(v);
+    }
+    if (pts.length < 2) continue;
+    let sluten = pts.length > 3 && vinkel(pts[0], pts[pts.length - 1]) < 1e-9;
+    if (sluten) pts.pop();
+
+    // förtäta längs storcirklar så remsan följer terrängen
+    const D = [pts[0]];
+    const nSeg = sluten ? pts.length : pts.length - 1;
+    for (let i = 0; i < nSeg; i++) {
+      const a = pts[i], b = pts[(i + 1) % pts.length], k = Math.max(1, Math.ceil(vinkel(a, b) / steg));
+      for (let j = 1; j <= k; j++) {
+        if (sluten && i === nSeg - 1 && j === k) break;
+        const t = j / k;
+        D.push(norm([a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]), a[2] + t * (b[2] - a[2])]));
+      }
+    }
+    if (sluten && ((opt.dela && D.some(p => p[2] > 0) && D.some(p => p[2] <= 0)) || D.some(p => hojdVid(p) <= 0))) {
+      D.push(D[0]); sluten = false;
+    }
+
+    // ekvatorspunkt vid varje korsning, så att uppehållet alltid bryter remsan
+    const Q = [];
+    for (const b of D) {
+      if (opt.dela && Q.length) {
+        const a = Q[Q.length - 1];
+        if ((a[2] > 0 && b[2] < 0) || (a[2] < 0 && b[2] > 0)) {
+          const t = a[2] / (a[2] - b[2]);
+          const x = a[0] + t * (b[0] - a[0]), y = a[1] + t * (b[1] - a[1]), l = Math.hypot(x, y);
+          Q.push([x / l, y / l, 0]);
+        }
+      }
+      Q.push(b);
+    }
+
+    // bara bitar över land (och utanför ekvatorsbandet när globen delas)
+    let run = [];
+    const flush = () => {
+      if (run.length >= 2) {
+        const h = opt.dela && Q[run[0]][2] < 0 ? 1 : 0;
+        remsa(run.map(k => Q[k]), h, sluten && run.length === Q.length);
+      }
+      run = [];
+    };
+    for (let i = 0; i < Q.length; i++) {
+      if (!(hojdVid(Q[i]) > 0) || (opt.dela && Math.abs(Q[i][2]) < zBand)) { flush(); continue; }
+      run.push(i);
+    }
+    flush();
+  }
+  return { pos: pos.data.slice(), tri: tri.data.slice(), info: { remsor: nRemsor } };
+}
+
 // Vattentäthet: varje riktad kant a→b ska mötas av exakt en b→a. Plus volym.
 export function kontroll({ pos, tri }) {
   const nv = pos.length / 3, nt = tri.length / 3;

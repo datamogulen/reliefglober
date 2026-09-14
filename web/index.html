@@ -17,6 +17,7 @@
 <style>
   :root{ --bg:#0b0f17; --panel:rgba(12,17,28,.94); --text:#e7eefc; --muted:#a9b7d0; --line:rgba(255,255,255,.14); --accent:#6fb3ff; }
   *{ box-sizing:border-box; }
+  [hidden]{ display:none !important; }
   html,body{ height:100%; }
   body{ margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:var(--text); background:var(--bg); overflow:hidden; }
   #c{ position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; }
@@ -121,6 +122,7 @@
   </div>
   <label class="chk"><input type="checkbox" id="hojdfarg"/><span data-t="hojdfarg"></span></label>
   <label class="chk"><input type="checkbox" id="kust"/><span data-t="kust"></span></label>
+  <label class="chk"><input type="checkbox" id="granser"/><span data-t="granser"></span><input type="color" id="fGrans" style="margin-left:auto"/></label>
 
   <h2 data-t="utskrift">Utskrift</h2>
   <div class="falt">
@@ -131,6 +133,11 @@
     <span data-t="halDjup"></span><input type="number" id="halDjup" min="1" max="40" step="0.5"/>
   </div>
   <label class="chk"><input type="checkbox" id="dela"/><span data-t="dela"></span></label>
+  <label class="chk"><input type="checkbox" id="gransStl"/><span data-t="gransStl"></span></label>
+  <div class="falt" id="gransFalt" hidden>
+    <span data-t="gransBredd"></span><input type="number" id="gransBredd" min="0.3" max="5" step="0.1"/>
+    <span data-t="gransHojd"></span><input type="number" id="gransHojd" min="0.2" max="5" step="0.1"/>
+  </div>
   <div class="matt" id="matt"></div>
   <div class="varning" id="varning" hidden></div>
   <button id="bygg" data-t="bygg"></button>
