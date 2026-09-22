@@ -139,7 +139,7 @@ document.querySelectorAll('#sprak button').forEach(b => b.addEventListener('clic
 // ---------------------------------------------------------------- inställningar
 const INSTNYCKEL = 'relief_inst';
 const STD = {
-  lage: 'full', kLand: 40, kHav: 40, lank: true, gamma: 1, jamn: 0,
+  lage: 'full', kLand: 250, kHav: 250, lank: true, gamma: 1, jamn: 0,
   fLand: '#c9b27a', fHav: '#2f6bb3', hojdfarg: false, kust: true,
   diameter: 120, upp: 0.5, landDjup: 2, dela: true, halD: 5, halDjup: 8,
   granser: false, fGrans: '#262626', gransStl: false, gransBredd: 0.8, gransHojd: 0.5,
