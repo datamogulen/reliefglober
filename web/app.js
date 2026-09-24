@@ -112,9 +112,10 @@ const I18N = {
 };
 const SPRAKNYCKEL = 'relief_sprak';
 let LANG = (() => {
+  try { const q = new URLSearchParams(location.search).get('lang'); if (I18N[q]) return q; } catch {}
   try { const s = localStorage.getItem(SPRAKNYCKEL); if (I18N[s]) return s; } catch {}
   const n = (navigator.language || '').toLowerCase();
-  return n.startsWith('sv') ? 'sv' : n.startsWith('ja') ? 'ja' : 'en';
+  return /^(sv|nb|nn|no|da)/.test(n) ? 'sv' : n.startsWith('ja') ? 'ja' : 'en';
 })();
 const T = k => I18N[LANG][k] ?? I18N.sv[k] ?? k;
 const LOCALE = { sv: 'sv-SE', en: 'en-GB', ja: 'ja-JP' };
